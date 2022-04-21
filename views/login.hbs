@@ -1,1 +1,21 @@
-<h1>login </h1>
+<h1 class='text-center my-5'>login </h1>
+<div class='row justify-content-center'>
+	<div class='col-md-6'>
+		<form action='/auth/login' method='post'>
+			<input
+				type='text'
+				name='email'
+				class='form-control mb-2'
+				placeholder='ingrese email'
+				autocomplete='off'
+			/>
+			<input
+				type='password'
+				name='password'
+				class='form-control mb-2'
+				placeholder='ingrese password'
+			/>
+			<button class='btn btn-primary' type='submit'>Iniciar Sesion</button>
+		</form>
+	</div>
+</div>

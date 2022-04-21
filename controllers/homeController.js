@@ -60,10 +60,8 @@ const editarURL = async (req, res) => {
 
 const redireccionamiento = async (req, res) => {
 	const { url } = req.params;
-	console.log(url);
 	try {
 		const urlDB = await Url.findOne({ shortURL: url }).lean();
-		console.log(urlDB.shortURL);
 		res.redirect(urlDB.origin);
 	} catch (error) {
 		res.redirect(error);
