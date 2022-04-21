@@ -1,7 +1,9 @@
 const express = require('express');
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
 const { create } = require('express-handlebars');
+const User = require('./models/User');
 require('dotenv').config();
 require('./database/db');
 const app = express();
@@ -15,9 +17,21 @@ app.use(
 		name: 'secret-name',
 	})
 );
+app.use(flash());
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser((user, done) =>
+	done(null, { id: user._id, userName: user.userName })
+); //req.user
+passport.deserializeUser(async (user, done) => {
+	//es necesario revisar la base de datos?
+	const userDB = await User.findById(user.id);
+	return done(null, user);
+});
 
 //Ejemplo de como usar flash
-app.use(flash());
 app.get('/msg-flash', (req, res) => {
 	res.json(req.flash('mensaje'));
 });

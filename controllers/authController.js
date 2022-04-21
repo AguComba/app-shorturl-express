@@ -69,12 +69,22 @@ const loginUser = async (req, res) => {
 
 		if (!(await user.comparePassword(password)))
 			throw new Error('Contraseña invalida');
-		res.redirect('/');
+
+		// Creacion de sesion de usr por passport
+		req.login(user, function (err) {
+			if (err) throw new Error('Error al crear la session');
+			return res.redirect('/');
+		});
 	} catch (error) {
 		console.log(error);
 		req.flash('mensajes', [{ msg: error.message }]);
 		return res.redirect('/auth/login');
 	}
+};
+
+const cerrarSesion = (req, res) => {
+	req.logout();
+	return res.redirect('/auth/login');
 };
 
 module.exports = {
@@ -83,4 +93,5 @@ module.exports = {
 	registerUser,
 	loginForm,
 	loginUser,
+	cerrarSesion,
 };
