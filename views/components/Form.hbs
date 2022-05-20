@@ -1,5 +1,6 @@
 {{#if url}}
 	<form action='/editar/{{url._id}}' method='post'>
+		<input type='hidden' name='_csrf' value='{{csrfToken}}' />
 		<input
 			value='{{url.origin}}'
 			type='text'
@@ -12,6 +13,7 @@
 	</form>
 {{else}}
 	<form action='/' method='post'>
+		<input type='hidden' name='_csrf' value='{{csrfToken}}' />
 		<input
 			type='text'
 			placeholder='ingrese url'

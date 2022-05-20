@@ -1,6 +1,6 @@
 const { URL } = require('url');
 
-const validarURL = (req, res, next) => {
+const urlValidate = (req, res, next) => {
 	try {
 		const { origin } = req.body;
 		const urlFront = new URL(origin);
@@ -8,12 +8,16 @@ const validarURL = (req, res, next) => {
 			if (urlFront.protocol === 'http:' || urlFront.protocol === 'https:') {
 				return next();
 			}
-		} else {
-			throw new Error('no valida');
 		}
+		throw new Error('tiene que tener https://');
 	} catch (error) {
-		return res.send('Url invalida');
+		if (error.message === 'Invalid URL') {
+			req.flash('mensajes', [{ msg: 'url no valida' }]);
+		} else {
+			req.flash('mensajes', [{ msg: error.message }]);
+		}
+		res.redirect('/');
 	}
 };
 
-module.exports = { validarURL };
+module.exports = urlValidate;

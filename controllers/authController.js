@@ -1,10 +1,11 @@
 const User = require('../models/User');
 const { validationResult } = require('express-validator');
-const flash = require('connect-flash');
 const { nanoid } = require('nanoid');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 const registerForm = (req, res) => {
-	res.render('register', { mensajes: req.flash('mensajes') });
+	res.render('register');
 };
 
 const registerUser = async (req, res) => {
@@ -21,6 +22,24 @@ const registerUser = async (req, res) => {
 
 		user = new User({ userName, email, password, tokenConfirm: nanoid() });
 		await user.save();
+
+		//envia correo para validar cuenta
+		const transport = nodemailer.createTransport({
+			host: 'smtp.mailtrap.io',
+			port: 2525,
+			auth: {
+				user: process.env.userEmail,
+				pass: process.env.passEmail,
+			},
+		});
+
+		await transport.sendMail({
+			from: '"Fred Foo 👻" <foo@example.com>', // sender address
+			to: user.email, // list of receivers
+			subject: 'Verifica tu cuenta de correo ✔', // Subject line
+			text: 'Hello world?', // plain text body
+			html: `<a href='http://localhost:5000/auth/confirmarCuenta/${user.tokenConfirm}'>Verifica tu cuenta aqui</a>`, // html body
+		});
 
 		req.flash('mensajes', [
 			{ msg: 'Revisa tu correo electronico y valida la cuenta' },
@@ -50,7 +69,7 @@ const confirmarCuenta = async (req, res) => {
 };
 
 const loginForm = (req, res) => {
-	res.render('login', { mensajes: req.flash('mensajes') });
+	res.render('login');
 };
 
 const loginUser = async (req, res) => {
