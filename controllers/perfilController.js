@@ -1,6 +1,8 @@
 const formidable = require('formidable');
+const Jimp = require('jimp')
 const path = require('path');
 const fs = require('fs');
+const User = require('../models/User')
 
 const formPerfil = (req, res) => {
 	res.render('perfil');
@@ -35,7 +37,14 @@ const editarFotoPerfil = async (req, res) => {
 				__dirname,
 				`../public/img/Perfiles/${req.user.id}.${extension}`
 			);
-			fs.renameSync(file.filepath, dirFile);
+			fs.copyFileSync(file.filepath, dirFile)
+
+			const image = await Jimp.read(dirFile)
+			image.resize(200,200).quality(90).writeAsync(dirFile)
+
+			const user = await User.findById(req.user.id)
+			user.image = `${req.user.id}.${extension}`
+			await user.save()
 
 			req.flash('mensajes', [{ msg: 'ya se subio la img' }]);
 			return res.redirect('/auth/login');
